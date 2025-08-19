@@ -10,6 +10,8 @@ from langchain_core.prompts import PromptTemplate
 
 ytt_api = YouTubeTranscriptApi()
 splitter = RecursiveCharacterTextSplitter(chunk_size = 1000, chunk_overlap = 200)
+embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+# vector_store = FAISS.from_documents(chunks, embeddings)
 
 
 video_id = "LPZh9BOjkQs"
@@ -25,7 +27,17 @@ except TranscriptsDisabled:
     print("No captions available for this video")
 
 
+# Document Splitting
+
 chunks = splitter.create_documents([transcript])
+# print(len(chunks))
+
+# Embedding of Splitted Documents 
+vector_store = FAISS.from_documents(chunks, embeddings)
+print(vector_store.index_to_docstore_id)
+
+doc = vector_store.get_by_ids(["7a7b7e4d-6690-4a60-a3bf-0463a489d3d6"])
+print(doc)
 
 
 
